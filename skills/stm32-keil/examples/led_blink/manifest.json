@@ -1,0 +1,9 @@
+{
+  "name": "led_blink",
+  "complexity": "beginner",
+  "cpuclk_hz": 72000000,
+  "pins": ["PC13"],
+  "peripherals": ["GPIO"],
+  "validated": true,
+  "description": "Blue Pill 板载 LED (PC13) 500ms 翻转，验证基础 GPIO 和时钟"
+}

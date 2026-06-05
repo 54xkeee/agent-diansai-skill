@@ -1,0 +1,9 @@
+{
+  "name": "uart_dma_rx",
+  "complexity": "intermediate",
+  "cpuclk_hz": 72000000,
+  "pins": ["PA9", "PA10"],
+  "peripherals": ["USART1", "DMA1"],
+  "validated": true,
+  "description": "USART1 DMA 循环接收，中断触发半满/全满回调，阻塞发送回显"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "uart_blocking_tx",
+  "complexity": "beginner",
+  "cpuclk_hz": 72000000,
+  "pins": ["PA9", "PA10"],
+  "peripherals": ["USART1"],
+  "validated": true,
+  "description": "USART1 115200 阻塞发送，每秒输出 'hello\\r\\n'，验证串口和 printf 重定向"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "pwm_breath_led",
+  "complexity": "beginner",
+  "cpuclk_hz": 72000000,
+  "pins": ["PA8"],
+  "peripherals": ["TIM1", "GPIO"],
+  "validated": true,
+  "description": "TIM1_CH1 (PA8) PWM 呼吸灯，Prescaler=71 Period=999，占空比从0到999循环"
+}
