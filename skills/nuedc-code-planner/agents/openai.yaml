@@ -1,0 +1,4 @@
+interface:
+  display_name: "NUEDC Code Planner"
+  short_description: "Plan staged NUEDC task implementation"
+  default_prompt: "Use $nuedc-code-planner to turn this contest task into a staged, maintainable code implementation plan."

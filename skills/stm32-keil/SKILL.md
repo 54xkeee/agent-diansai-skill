@@ -1,3 +1,8 @@
+---
+name: stm32-keil
+description: Use when Codex needs to generate, review, validate, flash, debug, or diagnose STM32 Keil/CubeMX projects, especially .ioc files, HAL peripheral configuration, ST-Link/OpenOCD/CubeProgrammer flashing, and serial console workflows.
+---
+
 # STM32 Keil Skill
 
 AI 工作规范文档。工具层（Python）保证格式正确，AI 负责意图理解和问答。

@@ -1,0 +1,4 @@
+interface:
+  display_name: "赛题到工程任务编译器"
+  short_description: "将电赛题编译为得分路径、MVP、Codex任务书与验证门槛"
+  default_prompt: "Use $analyze-nuedc-task to compile this competition task into an executable engineering task package."

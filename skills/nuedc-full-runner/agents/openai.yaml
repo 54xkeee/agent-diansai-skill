@@ -1,0 +1,4 @@
+interface:
+  display_name: "NUEDC Full Runner"
+  short_description: "Run NUEDC tasks through staged artifacts"
+  default_prompt: "Use $nuedc-full-runner to turn this full contest problem into a staged engineering plan, code cycle, and verification path."

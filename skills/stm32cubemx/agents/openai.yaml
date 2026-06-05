@@ -1,0 +1,4 @@
+interface:
+  display_name: "STM32CubeMX"
+  short_description: "Run CubeMX generation and Keil builds"
+  default_prompt: "Use $stm32cubemx to validate my .ioc with STM32CubeMX and build the generated Keil project."
