@@ -1,136 +1,150 @@
-# stm32-skill 使用教程
+# agent-diansai-skill
 
-STM32 嵌入式开发辅助工具集，从 [mspm0-skill](https://github.com/mc3545dada/mspm0-skill) 移植而来。
+STM32 嵌入式开发 + 电赛全流程 AI Skill 集合。
 
-## 1. 环境准备
+---
 
-```bash
+## 🚀 一键配置（复制给 AI）
+
+> 把下面这段话直接发给支持 Claude Code / Kiro 的 AI，它会自动完成所有配置：
+
+```
+请帮我安装 agent-diansai-skill 工具集。
+
+执行以下步骤：
+1. 克隆仓库到本地临时目录：
+   git clone https://github.com/54xkeee/agent-diansai-skill.git "$env:TEMP\agent-diansai-skill"
+
+2. 运行安装脚本：
+   powershell -ExecutionPolicy Bypass -File "$env:TEMP\agent-diansai-skill\install.ps1"
+
+3. 安装完成后删除临时目录：
+   Remove-Item -Recurse -Force "$env:TEMP\agent-diansai-skill"
+
+4. 告诉我哪些 skill 已安装成功，以及可以用哪些命令。
+```
+
+---
+
+## 包含的 Skill
+
+| Skill 名称 | 触发场景 | 功能 |
+|---|---|---|
+| `stm32-keil` | STM32 Keil/CubeMX 项目开发 | 生成 .ioc、烧录、串口调试、检查项目结构 |
+| `stm32cubemx` | 需要 CubeMX CLI 验证或 Keil 构建 | CubeMX headless 生成 + Keil UV4 构建验证 |
+| `nuedc-full-runner` | 给出完整电赛/校赛赛题，要求全流程跑通 | 赛题分析 → 代码架构 → 实现周期 → 验证 |
+| `analyze-nuedc-task` | 需要拆解赛题、提取评分路径 | 输出得分闭环、主矛盾、MVP |
+| `nuedc-code-planner` | 已有工程包，需要生成代码实现计划 | 模块设计、状态机、实现周期划分 |
+| `planning-with-files-zh` | 多步骤任务需要持久化规划文件 | 维护 task_plan.md / findings.md / progress.md |
+
+---
+
+## 手动安装
+
+### 前置要求
+
+```powershell
 pip install pyserial
 ```
 
-工具可选（按需安装）：
-- **OpenOCD** — https://github.com/openocd-org/openocd/releases
-- **STM32CubeProgrammer** — https://www.st.com/en/development-tools/stm32cubeprog.html
-- **arm-none-eabi-gdb** — 随 Keil MDK 或 GNU Arm Toolchain 附带
+可选工具（按需）：
+- [STM32CubeProgrammer](https://www.st.com/en/development-tools/stm32cubeprog.html)
+- [OpenOCD](https://github.com/openocd-org/openocd/releases)
+- STM32CubeMX 6.x（Keil 构建验证用）
 
-## 2. 识别调试探针
+### 安装步骤
 
-```bash
-python skills/stm32-keil/scripts/detect_probe.py
+```powershell
+git clone https://github.com/54xkeee/agent-diansai-skill.git
+cd agent-diansai-skill
+powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
-输出示例：
-```
-Probe 1: stlink
-  Device: ST-Link/V2
-  USB ID: 0483:3748
-  Recommended backend: openocd
-  Recommended config: interface/stlink.cfg
-```
+Skills 会被安装到 `~/.codex/skills/`，AI 自动加载。
 
-加 `--json` 获取机器可读输出。
+---
 
-## 3. 检查项目结构
+## Skill 使用方法
 
-```bash
-python skills/stm32-keil/scripts/check_project.py D:/my_stm32_project
-```
-
-检查内容：
-- `.ioc` 文件是否存在，读取 MCU 型号和外设列表
-- 编译产物（`.elf` / `.axf` / `.hex`）是否存在
-- `main.c` 的 `USER CODE` 区域是否完整
-- HAL 驱动目录是否存在
-
-## 4. 烧录固件
-
-### 方式 A：STM32CubeProgrammer（推荐，支持 ST-Link）
-
-```bash
-# 自动查找编译产物烧录
-python skills/stm32-keil/scripts/cubeprog_flash.py flash D:/my_stm32_project
-
-# 指定固件文件
-python skills/stm32-keil/scripts/cubeprog_flash.py flash D:/my_stm32_project --firmware Debug/my_project.elf
-
-# 列出当前连接的探针
-python skills/stm32-keil/scripts/cubeprog_flash.py list
-```
-
-### 方式 B：OpenOCD（支持 ST-Link / J-Link / CMSIS-DAP）
-
-```bash
-# 自动从 .ioc 检测目标型号
-python skills/stm32-keil/scripts/openocd_debug.py D:/my_stm32_project flash
-
-# 指定接口（默认 ST-Link）
-python skills/stm32-keil/scripts/openocd_debug.py D:/my_stm32_project --interface interface/jlink.cfg flash
-
-# 查看目标寄存器
-python skills/stm32-keil/scripts/openocd_debug.py D:/my_stm32_project registers
-
-# 复位运行
-python skills/stm32-keil/scripts/openocd_debug.py D:/my_stm32_project reset
-
-# 运行到 main 函数（需要 arm-none-eabi-gdb）
-python skills/stm32-keil/scripts/openocd_debug.py D:/my_stm32_project run-to-symbol --symbol main
-```
-
-## 5. 串口调试
-
-```bash
-# 列出可用串口
-python skills/stm32-keil/scripts/serial_console.py --list
-
-# 打开串口监视（115200，Ctrl+C 退出）
-python skills/stm32-keil/scripts/serial_console.py --port COM3
-
-# 发送字符串
-python skills/stm32-keil/scripts/serial_console.py --port COM3 --send "hello" --send-line
-
-# 发送十六进制数据
-python skills/stm32-keil/scripts/serial_console.py --port COM3 --send-hex "01 02 0A"
-
-# 以十六进制显示接收内容
-python skills/stm32-keil/scripts/serial_console.py --port COM3 --hex
-
-# 运行 10 秒后自动退出
-python skills/stm32-keil/scripts/serial_console.py --port COM3 --duration 10
-```
-
-## 6. 查看内置例程
-
-```bash
-python skills/stm32-keil/scripts/list_examples.py
-```
-
-输出：
-```
-Name               Complexity   Clock  Pins   Peripherals    Validated
-led_blink          beginner     72MHz  PC13   GPIO           yes
-pwm_breath_led     beginner     72MHz  PA8    TIM1, GPIO     yes
-uart_blocking_tx   beginner     72MHz  PA9    USART1         yes
-uart_dma_rx        intermediate 72MHz  PA9    USART1, DMA1   yes
-```
-
-例程源码在 `skills/stm32-keil/examples/<name>/main.c`，均基于 **STM32F103C8T6 (Blue Pill)**，HSE 8MHz → PLL × 9 → 72MHz。
-
-## 7. 典型工作流
+安装后，直接在 AI 对话中描述需求，AI 会自动调用对应 Skill。也可以用斜杠命令显式触发：
 
 ```
-1. check_project.py    确认 .ioc 和编译产物
-2. detect_probe.py     确认探针类型
-3. cubeprog_flash.py   烧录
-4. serial_console.py   串口验证输出
+/nuedc-full-runner   # 电赛全流程
+/stm32-keil          # STM32 Keil 项目
 ```
+
+---
+
+## stm32-keil 工具命令
+
+### 识别调试探针
+
+```powershell
+python "$env:USERPROFILE\.codex\skills\stm32-keil\scripts\detect_probe.py"
+```
+
+### 检查项目结构
+
+```powershell
+python "$env:USERPROFILE\.codex\skills\stm32-keil\scripts\check_project.py" D:\my_project
+```
+
+### 烧录固件
+
+```powershell
+# STM32CubeProgrammer（推荐）
+python "$env:USERPROFILE\.codex\skills\stm32-keil\scripts\cubeprog_flash.py" flash D:\my_project
+
+# OpenOCD
+python "$env:USERPROFILE\.codex\skills\stm32-keil\scripts\openocd_debug.py" D:\my_project flash
+```
+
+### 串口调试
+
+```powershell
+# 列出串口
+python "$env:USERPROFILE\.codex\skills\stm32-keil\scripts\serial_console.py" --list
+
+# 打开监视（Ctrl+C 退出）
+python "$env:USERPROFILE\.codex\skills\stm32-keil\scripts\serial_console.py" --port COM3
+```
+
+### 查看内置例程
+
+```powershell
+python "$env:USERPROFILE\.codex\skills\stm32-keil\scripts\list_examples.py"
+```
+
+---
+
+## stm32cubemx 工具命令
+
+```powershell
+# CubeMX 生成 + Keil 构建验证
+python "$env:USERPROFILE\.codex\skills\stm32cubemx\scripts\cubemx_generate_build.py" `
+  --ioc "D:\my_project\project.ioc" --build-keil
+
+# 指定工具路径
+python "$env:USERPROFILE\.codex\skills\stm32cubemx\scripts\cubemx_generate_build.py" `
+  --ioc "D:\my_project\project.ioc" `
+  --cubemx "D:\STM32CubeMX" `
+  --uv4 "C:\Keil_v5\UV4\UV4.exe" `
+  --build-keil
+```
+
+---
 
 ## 常见问题
 
 **找不到 STM32_Programmer_CLI**
-设置环境变量：`set STM32CUBEPROG=C:\path\to\STM32_Programmer_CLI.exe`
+```powershell
+$env:STM32CUBEPROG = "C:\path\to\STM32_Programmer_CLI.exe"
+```
 
 **找不到 openocd**
-设置环境变量：`set OPENOCD=C:\path\to\openocd.exe`
+```powershell
+$env:OPENOCD = "C:\path\to\openocd.exe"
+```
 
 **串口被占用**
-关闭 Keil MDK 或 STM32CubeIDE 的串口监视器，再运行 serial_console.py。
+关闭 Keil MDK 或 STM32CubeIDE 的串口监视器。
