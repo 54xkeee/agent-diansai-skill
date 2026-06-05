@@ -1,0 +1,43 @@
+{
+  "mcu": {
+    "user_name": "STM32F103RCTx",
+    "cpn": "STM32F103RCT6",
+    "cubemx_name": "STM32F103R(C-D-E)Tx",
+    "package": "LQFP64"
+  },
+  "project": {
+    "name": "XMU2026_Car_F103RCT6",
+    "toolchain": "MDK-ARM V5.32",
+    "stack": "0x800",
+    "heap": "0x400"
+  },
+  "peripherals": [
+    {"type": "pwm",      "timer": "TIM1", "channels": [1, 2], "freq_hz": 20000, "labels": ["MOTOR_L_PWM", "MOTOR_R_PWM"]},
+    {"type": "encoder",  "timer": "TIM2", "label_a": "ENC_L_A", "label_b": "ENC_L_B"},
+    {"type": "encoder",  "timer": "TIM3", "label_a": "ENC_R_A", "label_b": "ENC_R_B"},
+    {"type": "scheduler","timer": "TIM4", "period_ms": 1},
+    {"type": "adc",      "channels": [8,9,10,11,12,13,14,15], "dma": true},
+    {"type": "i2c",      "bus": "I2C1", "speed_hz": 100000, "labels": ["I2C1_SCL_MPU_OLED", "I2C1_SDA_MPU_OLED"]},
+    {"type": "uart",     "instance": "USART3", "baudrate": 115200, "labels": ["DEBUG_TX", "DEBUG_RX"]}
+  ],
+  "gpio": [
+    {"pin": "PC6",  "label": "AIN1",         "direction": "output"},
+    {"pin": "PC7",  "label": "AIN2",         "direction": "output"},
+    {"pin": "PB14", "label": "BIN1",         "direction": "output"},
+    {"pin": "PB15", "label": "BIN2",         "direction": "output"},
+    {"pin": "PC10", "label": "TB6612_STBY",  "direction": "output"},
+    {"pin": "PB12", "label": "BUZZER",       "direction": "output"},
+    {"pin": "PB13", "label": "STATUS_LED",   "direction": "output"},
+    {"pin": "PC8",  "label": "BUTTON_START", "direction": "input", "pull": "GPIO_PULLUP"},
+    {"pin": "PC9",  "label": "BUTTON_TASK",  "direction": "input", "pull": "GPIO_PULLUP"}
+  ],
+  "assumptions": [
+    "PWM freq 20kHz: TIM1 Prescaler=0, Period=3599 (72MHz/3600=20kHz)",
+    "Encoder mode TI12 (4x), Period=65535",
+    "TIM4 scheduler 1ms: Prescaler=71, Period=999",
+    "ADC1 8ch DMA circular, 71.5 cycles sampling",
+    "I2C1 100kHz (MPU6050 + OLED + line sensor on same bus)",
+    "USART3 115200 async debug",
+    "All free GPIO labels match reference project"
+  ]
+}
