@@ -1,0 +1,4 @@
+interface:
+  display_name: "电赛人机协作"
+  short_description: "面向大一新生，从描述现象、分工验证到项目交付，学会与 AI 配合"
+  default_prompt: "用 $diansai-collab 帮我推进这个电赛项目，先弄清当前目标和现场情况，再分别给出你能完成的工作与我下一步的操作。"

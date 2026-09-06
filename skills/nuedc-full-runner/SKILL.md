@@ -1,10 +1,11 @@
 ---
 name: nuedc-full-runner
-description: 当用户第一轮输入完整 NUEDC/电赛/嵌入式竞赛赛题、PDF、图片、评分规则或要求 Codex 从赛题分析到代码实现全流程跑通时使用。该 skill 作为上层 Orchestrator，调度 planning-with-files-zh、analyze-nuedc-task、nuedc-code-planner、stm32-keil/stm32cubemx 等能力，建立文件 checkpoint、得分路径、主矛盾、MVP、代码周期和验证门槛，避免直接生成一坨不可运行的完整代码。
-user-invocable: true
+description: 仅在用户明确选择电赛完整工程流程、工程任务包和分阶段文档时使用；提供审题、代码架构、实现周期和验证记录。普通初学者协作、单个调试问题或仅提供赛题 PDF 时不启动此重流程，优先使用 diansai-collab。
 ---
 
 # NUEDC Full Runner
+
+这是保留的可选专业流程。仅在已确认上述适用范围后执行下面的多文件工作方式；普通电赛人机协作直接使用 `diansai-collab`，无需补齐这里的文档。
 
 这是一个上层 Orchestrator skill。它不重复底层专业知识，而是决定当前缺哪个工程产物、该调用哪类能力、何时停止、何时进入代码实现。
 
